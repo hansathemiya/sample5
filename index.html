@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Bakery - Fresh Baked Goods</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #8B4513;
+            --secondary: #D2691E;
+            --accent: #CD853F;
+            --light: #F5DEB3;
+            --dark: #5D4037;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #FFF8F0;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(139, 69, 19, 0.7), rgba(210, 105, 30, 0.8)), url('https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3') no-repeat center center/cover;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        .product-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            background: white;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cart-container {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .cart-container.active {
+            right: 0;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        .cart-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100px;
+        }
+        
+        .quantity-control button {
+            background: #f5f5f5;
+            border: none;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+        
+        .quantity-control input {
+            text-align: center;
+            border: none;
+            width: 40px;
+            height: 30px;
+        }
+        
+        .cart-total {
+            background: var(--light);
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-cart {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .checkout-form input, .checkout-form textarea {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+        
+        .checkout-form input:focus, .checkout-form textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(205, 133, 63, 0.2);
+        }
+        
+        .required::after {
+            content: " *";
+            color: #e74c3c;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #777;
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+        }
+        
+        .footer-link {
+            color: #cbd5e0;
+            transition: color 0.3s;
+        }
+        
+        .footer-link:hover {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header text-white py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="bg-white text-brown-800 font-bold text-xl w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-bread-slice"></i>
+                </div>
+                <h1 class="text-2xl font-bold">SAMPLE BAKERY</h1>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#home" class="hover:text-amber-200 transition">Home</a>
+                <a href="#products" class="hover:text-amber-200 transition">Products</a>
+                <a href="#about" class="hover:text-amber-200 transition">About</a>
+                <a href="#contact" class="hover:text-amber-200 transition">Contact</a>
+            </nav>
+            <button class="md:hidden text-2xl">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container mx-auto px-4 text-center text-white">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">Fresh Baked Goods Daily</h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">Experience the aroma of freshly baked bread from Sample Bakery in Millewa</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#products" class="btn px-8 py-4 text-lg">Shop Now</a>
+                <a href="#contact" class="btn bg-white text-brown-800 hover:bg-gray-100 px-8 py-4 text-lg">Contact Us</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section id="products" class="py-16 bg-amber-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Our Fresh Breads</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Baked daily with the finest ingredients and traditional recipes</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Product 1 -->
+                <div class="product-card">
+                    <div class="p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-bread-slice text-5xl text-amber-700"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 text-center">Longbread</h3>
+                        <p class="text-gray-600 mb-4 text-center">Buttery, crumbly, and delicious traditional longbread</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg">$5.99</span>
+                            <div class="quantity-control">
+                                <button class="decrease" data-product="longbread">-</button>
+                                <input type="number" min="0" value="0" class="quantity" data-product="longbread">
+                                <button class="increase" data-product="longbread">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 2 -->
+                <div class="product-card">
+                    <div class="p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-bread-slice text-5xl text-amber-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 text-center">Flatbread</h3>
+                        <p class="text-gray-600 mb-4 text-center">Thin, crispy flatbread perfect for any meal</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg">$3.99</span>
+                            <div class="quantity-control">
+                                <button class="decrease" data-product="flatbread">-</button>
+                                <input type="number" min="0" value="0" class="quantity" data-product="flatbread">
+                                <button class="increase" data-product="flatbread">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 3 -->
+                <div class="product-card">
+                    <div class="p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-bread-slice text-5xl text-amber-800"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 text-center">Roundbread</h3>
+                        <p class="text-gray-600 mb-4 text-center">Traditional round bread with a hearty crust</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg">$4.99</span>
+                            <div class="quantity-control">
+                                <button class="decrease" data-product="roundbread">-</button>
+                                <input type="number" min="0" value="0" class="quantity" data-product="roundbread">
+                                <button class="increase" data-product="roundbread">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 4 -->
+                <div class="product-card">
+                    <div class="p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-bread-slice text-5xl text-amber-500"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 text-center">Regular Bread</h3>
+                        <p class="text-gray-600 mb-4 text-center">Classic white bread, soft and fluffy</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg">$2.99</span>
+                            <div class="quantity-control">
+                                <button class="decrease" data-product="regular">-</button>
+                                <input type="number" min="0" value="0" class="quantity" data-product="regular">
+                                <button class="increase" data-product="regular">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="about" class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Why Choose Sample Bakery?</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">We're committed to providing the freshest, highest quality baked goods</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-3">Natural Ingredients</h3>
+                    <p class="text-gray-600">We use only the finest natural ingredients, sourced locally whenever possible.</p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-3">Traditional Baking</h3>
+                    <p class="text-gray-600">Our recipes have been passed down through generations for authentic taste.</p>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-3">Daily Fresh</h3>
+                    <p class="text-gray-600">All our breads are baked fresh daily to ensure the best quality and taste.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-amber-50">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-1/2 bg-gradient-to-br from-amber-800 to-amber-600 text-white p-8">
+                        <h2 class="text-2xl font-bold mb-6">Visit Our Bakery</h2>
+                        <p class="mb-6">Come experience the aroma of fresh bread baking in our ovens!</p>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-map-marker-alt mr-4 text-xl"></i>
+                                <span>123 Bakery Street, Millewa</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-phone mr-4 text-xl"></i>
+                                <span>(03) 5021 4567</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-clock mr-4 text-xl"></i>
+                                <span>Mon-Sat: 6AM - 6PM, Sun: 7AM - 4PM</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="md:w-1/2 p-8">
+                        <h3 class="text-xl font-bold mb-6">Send us a message</h3>
+                        <form class="contact-form">
+                            <input type="text" placeholder="Your Name" required>
+                            <input type="email" placeholder="Your Email">
+                            <input type="tel" placeholder="Phone Number" required>
+                            <textarea rows="4" placeholder="Your Message"></textarea>
+                            <button type="submit" class="btn w-full">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="bg-white text-brown-800 font-bold text-xl w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-bread-slice"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">SAMPLE BAKERY</h3>
+                    </div>
+                    <p class="text-gray-400 mb-4">Serving the Millewa community with fresh, quality baked goods since 1985.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="footer-link hover:underline">Home</a></li>
+                        <li><a href="#products" class="footer-link hover:underline">Products</a></li>
+                        <li><a href="#about" class="footer-link hover:underline">About Us</a></li>
+                        <li><a href="#contact" class="footer-link hover:underline">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Popular Items</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="footer-link hover:underline">Longbread</a></li>
+                        <li><a href="#" class="footer-link hover:underline">Flatbread</a></li>
+                        <li><a href="#" class="footer-link hover:underline">Roundbread</a></li>
+                        <li><a href="#" class="footer-link hover:underline">Regular Bread</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4">Opening Hours</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Monday - Saturday: 6AM - 6PM</li>
+                        <li>Sunday: 7AM - 4PM</li>
+                        <li class="mt-4">Orders: 24/7 Online</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500">
+                <p>&copy; 2023 Sample Bakery. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Button -->
+    <button class="btn btn-cart" id="cartButton">
+        <i class="fas fa-shopping-cart text-xl"></i>
+        <div class="cart-count" id="cartCount">0</div>
+    </button>
+
+    <!-- Cart Container -->
+    <div class="overlay" id="overlay"></div>
+    <div class="cart-container" id="cartContainer">
+        <div class="p-6 border-b">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold">Your Order</h2>
+                <button id="closeCart" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="p-6" id="cartItems">
+            <!-- Cart items will be populated here -->
+            <div class="text-center py-10 text-gray-500" id="emptyCartMessage">
+                <i class="fas fa-shopping-cart text-5xl mb-4"></i>
+                <p>Your cart is empty</p>
+                <p class="mt-2">Add some delicious breads to your order!</p>
+            </div>
+        </div>
+        
+        <div class="cart-total flex justify-between items-center px-6 py-4">
+            <span>Total:</span>
+            <span class="text-xl font-bold" id="cartTotal">$0.00</span>
+        </div>
+        
+        <div class="p-6">
+            <button class="btn w-full" id="checkoutButton">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h2 class="text-2xl font-bold mb-6">Complete Your Order</h2>
+            <form id="checkoutForm" class="checkout-form">
+                <input type="text" id="customerName" placeholder="Full Name" required>
+                <input type="tel" id="customerPhone" placeholder="Phone Number" required>
+                <input type="email" id="customerEmail" placeholder="Email (Optional)">
+                <textarea id="customerAddress" placeholder="Delivery Address" rows="3" required></textarea>
+                <button type="submit" class="btn w-full">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold mb-4">Order Submitted!</h2>
+            <p class="mb-6">Thank you for your order. We will contact you to confirm your order shortly.</p>
+            <button class="btn" id="closeSuccessModal">Continue Shopping</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize cart from localStorage
+        let cart = JSON.parse(localStorage.getItem('bakeryCart')) || {};
+        
+        // Product prices
+        const prices = {
+            longbread: 5.99,
+            flatbread: 3.99,
+            roundbread: 4.99,
+            regular: 2.99
+        };
+        
+        // DOM Elements
+        const cartButton = document.getElementById('cartButton');
+        const cartContainer = document.getElementById('cartContainer');
+        const overlay = document.getElementById('overlay');
+        const closeCart = document.getElementById('closeCart');
+        const cartItems = document.getElementById('cartItems');
+        const cartCount = document.getElementById('cartCount');
+        const cartTotal = document.getElementById('cartTotal');
+        const checkoutButton = document.getElementById('checkoutButton');
+        const checkoutModal = document.getElementById('checkoutModal');
+        const closeModal = document.getElementById('closeModal');
+        const checkoutForm = document.getElementById('checkoutForm');
+        const successModal = document.getElementById('successModal');
+        const closeSuccessModal = document.getElementById('closeSuccessModal');
+        const emptyCartMessage = document.getElementById('emptyCartMessage');
+        
+        // Quantity buttons
+        document.querySelectorAll('.increase').forEach(button => {
+            button.addEventListener('click', function() {
+                const product = this.getAttribute('data-product');
+                updateQuantity(product, 1);
+            });
+        });
+        
+        document.querySelectorAll('.decrease').forEach(button => {
+            button.addEventListener('click', function() {
+                const product = this.getAttribute('data-product');
+                updateQuantity(product, -1);
+            });
+        });
+        
+        // Quantity inputs
+        document.querySelectorAll('.quantity').forEach(input => {
+            input.addEventListener('change', function() {
+                const product = this.getAttribute('data-product');
+                const value = parseInt(this.value) || 0;
+                updateQuantity(product, value - (cart[product] || 0));
+            });
+        });
+        
+        // Update quantity function
+        function updateQuantity(product, change) {
+            const currentQty = cart[product] || 0;
+            const newQty = Math.max(0, currentQty + change);
+            
+            if (newQty === 0) {
+                delete cart[product];
+            } else {
+                cart[product] = newQty;
+            }
+            
+            localStorage.setItem('bakeryCart', JSON.stringify(cart));
+            updateCartDisplay();
+            
+            // Update input field
+            document.querySelector(`.quantity[data-product="${product}"]`).value = newQty;
+        }
+        
+        // Update cart display
+        function updateCartDisplay() {
+            // Update cart count
+            const totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+            cartCount.textContent = totalItems;
+            
+            // Clear cart items
+            cartItems.innerHTML = '';
+            
+            // Show empty message if cart is empty
+            if (totalItems === 0) {
+                cartItems.appendChild(emptyCartMessage);
+                emptyCartMessage.style.display = 'block';
+                cartTotal.textContent = '$0.00';
+                return;
+            }
+            
+            emptyCartMessage.style.display = 'none';
+            
+            // Add items to cart
+            let total = 0;
+            for (const [product, qty] of Object.entries(cart)) {
+                const price = prices[product];
+                const itemTotal = price * qty;
+                total += itemTotal;
+                
+                const productNames = {
+                    longbread: 'Longbread',
+                    flatbread: 'Flatbread',
+                    roundbread: 'Roundbread',
+                    regular: 'Regular Bread'
+                };
+                
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold">${productNames[product]}</h3>
+                            <p class="text-gray-600">$${price.toFixed(2)} each</p>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="quantity-control mr-4">
+                                <button class="decrease-cart" data-product="${product}">-</button>
+                                <input type="number" min="0" value="${qty}" class="quantity-cart" data-product="${product}">
+                                <button class="increase-cart" data-product="${product}">+</button>
+                            </div>
+                            <span class="font-bold mr-4">$${itemTotal.toFixed(2)}</span>
+                            <button class="text-red-500 remove-item" data-product="${product}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                cartItems.appendChild(cartItem);
+            }
+            
+            // Update total
+            cartTotal.textContent = `$${total.toFixed(2)}`;
+            
+            // Add event listeners to new buttons
+            document.querySelectorAll('.increase-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const product = this.getAttribute('data-product');
+                    updateQuantity(product, 1);
+                });
+            });
+            
+            document.querySelectorAll('.decrease-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const product = this.getAttribute('data-product');
+                    updateQuantity(product, -1);
+                });
+            });
+            
+            document.querySelectorAll('.quantity-cart').forEach(input => {
+                input.addEventListener('change', function() {
+                    const product = this.getAttribute('data-product');
+                    const value = parseInt(this.value) || 0;
+                    updateQuantity(product, value - (cart[product] || 0));
+                });
+            });
+            
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', function() {
+                    const product = this.getAttribute('data-product');
+                    delete cart[product];
+                    localStorage.setItem('bakeryCart', JSON.stringify(cart));
+                    updateCartDisplay();
+                    document.querySelector(`.quantity[data-product="${product}"]`).value = 0;
+                });
+            });
+        }
+        
+        // Cart toggle
+        cartButton.addEventListener('click', () => {
+            cartContainer.classList.add('active');
+            overlay.classList.add('active');
+        });
+        
+        closeCart.addEventListener('click', () => {
+            cartContainer.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        overlay.addEventListener('click', () => {
+            cartContainer.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        // Checkout
+        checkoutButton.addEventListener('click', () => {
+            if (Object.keys(cart).length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            checkoutModal.classList.add('active');
+        });
+        
+        closeModal.addEventListener('click', () => {
+            checkoutModal.classList.remove('active');
+        });
+        
+        // Form submission
+        checkoutForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('customerName').value;
+            const phone = document.getElementById('customerPhone').value;
+            const email = document.getElementById('customerEmail').value;
+            const address = document.getElementById('customerAddress').value;
+            
+            // Prepare Google Form URL with pre-filled values
+            let formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSc6Zi4MR8abHUd5hsF3h4voM_CKEw_L2qGHd16_eCX-2l8lKQ/formResponse?';
+            
+            // Add customer info
+            formUrl += 'entry.1703929888=' + encodeURIComponent(name);
+            formUrl += '&entry.1083970214=' + encodeURIComponent(phone);
+            formUrl += '&entry.1452814455=' + encodeURIComponent(email);
+            formUrl += '&entry.518919696=' + encodeURIComponent(address);
+            
+            // Add bread quantities (empty if not ordered)
+            formUrl += '&entry.1965965253=' + (cart.longbread || '');
+            formUrl += '&entry.1358749132=' + (cart.flatbread || '');
+            formUrl += '&entry.151861888=' + (cart.roundbread || '');
+            formUrl += '&entry.314711422=' + (cart.regular || '');
+            
+            // Submit form in background
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = formUrl;
+            document.body.appendChild(iframe);
+            
+            // Show success message
+            checkoutModal.classList.remove('active');
+            successModal.classList.add('active');
+            
+            // Clear cart
+            cart = {};
+            localStorage.removeItem('bakeryCart');
+            updateCartDisplay();
+            checkoutForm.reset();
+        });
+        
+        // Close success modal
+        closeSuccessModal.addEventListener('click', () => {
+            successModal.classList.remove('active');
+        });
+        
+        // Initialize cart display
+        updateCartDisplay();
+    </script>
+</body>
+</html>
