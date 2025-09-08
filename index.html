@@ -19,11 +19,16 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #FFF8F0;
             color: #333;
+            /* Improve touch target sizing */
+            -webkit-tap-highlight-color: transparent;
         }
         
         .header {
             background: linear-gradient(to right, var(--primary), var(--secondary));
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
         .hero {
@@ -39,6 +44,7 @@
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             background: white;
+            margin-bottom: 16px;
         }
         
         .product-card:hover {
@@ -50,7 +56,8 @@
             position: fixed;
             top: 0;
             right: -400px;
-            width: 380px;
+            width: 100%;
+            max-width: 380px;
             height: 100vh;
             background: white;
             box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
@@ -93,6 +100,7 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             width: 100px;
+            overflow: hidden;
         }
         
         .quantity-control button {
@@ -101,6 +109,10 @@
             width: 30px;
             height: 30px;
             cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            /* Make buttons larger for mobile */
+            padding: 8px;
         }
         
         .quantity-control input {
@@ -108,6 +120,9 @@
             border: none;
             width: 40px;
             height: 30px;
+            font-size: 1rem;
+            /* Prevent zoom on input focus */
+            font-size: 16px;
         }
         
         .cart-total {
@@ -129,6 +144,9 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            /* Increase tap target size */
+            min-height: 44px;
+            font-size: 1rem;
         }
         
         .btn:hover {
@@ -145,6 +163,10 @@
             border-radius: 50%;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             z-index: 100;
+            /* Make cart button larger on mobile */
+            width: 70px;
+            height: 70px;
+            font-size: 1.5rem;
         }
         
         .cart-count {
@@ -170,6 +192,8 @@
             border: 1px solid #cbd5e0;
             border-radius: 8px;
             transition: border-color 0.3s;
+            /* Prevent zoom on input focus */
+            font-size: 16px;
         }
         
         .checkout-form input:focus, .checkout-form textarea:focus {
@@ -213,6 +237,8 @@
             text-align: center;
             transform: translateY(20px);
             transition: transform 0.3s ease;
+            /* Add margin for mobile */
+            margin: 20px;
         }
         
         .modal.active .modal-content {
@@ -266,7 +292,7 @@
         .order-type-btn {
             flex: 1;
             min-width: 120px;
-            padding: 12px;
+            padding: 16px 12px;
             border: 2px solid #cbd5e0;
             border-radius: 8px;
             background: white;
@@ -274,6 +300,9 @@
             transition: all 0.3s;
             text-align: center;
             font-weight: 500;
+            /* Increase tap target size */
+            min-height: 60px;
+            font-size: 1rem;
         }
         
         .order-type-btn:hover {
@@ -298,7 +327,7 @@
         .payment-method-btn {
             flex: 1;
             min-width: 120px;
-            padding: 12px;
+            padding: 16px 12px;
             border: 2px solid #cbd5e0;
             border-radius: 8px;
             background: white;
@@ -306,6 +335,9 @@
             transition: all 0.3s;
             text-align: center;
             font-weight: 500;
+            /* Increase tap target size */
+            min-height: 60px;
+            font-size: 1rem;
         }
         
         .payment-method-btn:hover {
@@ -319,9 +351,135 @@
             color: var(--primary);
             font-weight: 600;
         }
+        
+        /* Mobile menu styles */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            z-index: 1001;
+            transition: left 0.3s ease;
+            padding-top: 80px;
+            overflow-y: auto;
+        }
+        
+        .mobile-menu.active {
+            left: 0;
+        }
+        
+        .mobile-menu-item {
+            display: block;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .mobile-menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .close-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+                line-height: 1.2;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+                padding: 0 15px;
+            }
+            
+            .btn {
+                padding: 14px 20px;
+                font-size: 1rem;
+            }
+            
+            .product-card {
+                margin: 8px;
+            }
+            
+            .grid-cols-4, .grid-cols-3, .grid-cols-2 {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .contact-form input, .contact-form textarea {
+                font-size: 16px;
+                padding: 14px;
+            }
+            
+            footer .grid-cols-4 {
+                grid-template-columns: 1fr 1fr !important;
+            }
+            
+            .modal-content {
+                margin: 15px;
+                padding: 25px 20px;
+            }
+            
+            .order-type-btn, .payment-method-btn {
+                padding: 18px 12px;
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .btn {
+                padding: 12px 16px;
+                font-size: 0.95rem;
+            }
+            
+            .order-type-selector, .payment-method-selector {
+                flex-direction: column;
+            }
+            
+            .order-type-btn, .payment-method-btn {
+                min-width: auto;
+            }
+            
+            footer .grid-cols-4 {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .cart-container {
+                width: 100%;
+                max-width: none;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="close-menu" id="closeMenu">
+            <i class="fas fa-times"></i>
+        </button>
+        <a href="#home" class="mobile-menu-item">Home</a>
+        <a href="#products" class="mobile-menu-item">Products</a>
+        <a href="#about" class="mobile-menu-item">About</a>
+        <a href="#contact" class="mobile-menu-item">Contact</a>
+    </div>
+
     <!-- Header -->
     <header class="header text-white py-4">
         <div class="container mx-auto px-4 flex justify-between items-center">
@@ -337,7 +495,7 @@
                 <a href="#about" class="hover:text-amber-200 transition">About</a>
                 <a href="#contact" class="hover:text-amber-200 transition">Contact</a>
             </nav>
-            <button class="md:hidden text-2xl">
+            <button class="md:hidden text-2xl" id="menuButton">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
@@ -685,9 +843,23 @@
         const customerAddress = document.getElementById('customerAddress');
         const orderTypeBtns = document.querySelectorAll('.order-type-btn');
         const paymentMethodBtns = document.querySelectorAll('.payment-method-btn');
+        const menuButton = document.getElementById('menuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const closeMenu = document.getElementById('closeMenu');
         
         let selectedOrderType = null;
         let selectedPaymentMethod = 'cash';
+        
+        // Mobile menu toggle
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.add('active');
+            overlay.classList.add('active');
+        });
+        
+        closeMenu.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
+        });
         
         // Order type selection
         orderTypeBtns.forEach(btn => {
@@ -876,6 +1048,17 @@
         overlay.addEventListener('click', () => {
             cartContainer.classList.remove('active');
             overlay.classList.remove('active');
+            mobileMenu.classList.remove('active');
+        });
+        
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (checkoutModal.classList.contains('active') && !checkoutModal.contains(e.target) && e.target !== checkoutButton) {
+                checkoutModal.classList.remove('active');
+            }
+            if (successModal.classList.contains('active') && !successModal.contains(e.target)) {
+                successModal.classList.remove('active');
+            }
         });
         
         // Checkout
@@ -969,6 +1152,11 @@
         
         // Initialize cart display
         updateCartDisplay();
-    </script>
-</body>
-</html>
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+         
