@@ -254,6 +254,71 @@
         .footer-link:hover {
             color: white;
         }
+        
+        /* New styles for order type selection */
+        .order-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .order-type-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .order-type-btn:hover {
+            border-color: var(--accent);
+            background-color: #fff8f0;
+        }
+        
+        .order-type-btn.selected {
+            border-color: var(--primary);
+            background-color: #fff8f0;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .payment-method-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .payment-method-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .payment-method-btn:hover {
+            border-color: var(--accent);
+            background-color: #fff8f0;
+        }
+        
+        .payment-method-btn.selected {
+            border-color: var(--primary);
+            background-color: #fff8f0;
+            color: var(--primary);
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -557,7 +622,24 @@
                 <input type="text" id="customerName" placeholder="Full Name" required>
                 <input type="tel" id="customerPhone" placeholder="Phone Number" required>
                 <input type="email" id="customerEmail" placeholder="Email (Optional)">
-                <textarea id="customerAddress" placeholder="Delivery Address" rows="3" required></textarea>
+                
+                <h3 class="text-lg font-bold mb-3">How would you like to receive your order?</h3>
+                <div class="order-type-selector">
+                    <div class="order-type-btn" data-type="takeaway">Takeaway</div>
+                    <div class="order-type-btn" data-type="dinein">Dine In</div>
+                    <div class="order-type-btn" data-type="delivery">Delivery</div>
+                </div>
+                
+                <div id="addressField" style="display: none;">
+                    <h3 class="text-lg font-bold mb-3">Delivery Address</h3>
+                    <textarea id="customerAddress" placeholder="Delivery Address" rows="3"></textarea>
+                </div>
+                
+                <h3 class="text-lg font-bold mb-3">Payment Method</h3>
+                <div class="payment-method-selector">
+                    <div class="payment-method-btn selected" data-method="cash">Cash</div>
+                </div>
+                
                 <button type="submit" class="btn w-full">Place Order</button>
             </form>
         </div>
@@ -599,6 +681,50 @@
         const successModal = document.getElementById('successModal');
         const closeSuccessModal = document.getElementById('closeSuccessModal');
         const emptyCartMessage = document.getElementById('emptyCartMessage');
+        const addressField = document.getElementById('addressField');
+        const customerAddress = document.getElementById('customerAddress');
+        const orderTypeBtns = document.querySelectorAll('.order-type-btn');
+        const paymentMethodBtns = document.querySelectorAll('.payment-method-btn');
+        
+        let selectedOrderType = null;
+        let selectedPaymentMethod = 'cash';
+        
+        // Order type selection
+        orderTypeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove selected class from all buttons
+                orderTypeBtns.forEach(b => b.classList.remove('selected'));
+                
+                // Add selected class to clicked button
+                this.classList.add('selected');
+                
+                // Update selected order type
+                selectedOrderType = this.getAttribute('data-type');
+                
+                // Show/hide address field based on order type
+                if (selectedOrderType === 'delivery') {
+                    addressField.style.display = 'block';
+                    customerAddress.setAttribute('required', 'required');
+                } else {
+                    addressField.style.display = 'none';
+                    customerAddress.removeAttribute('required');
+                }
+            });
+        });
+        
+        // Payment method selection
+        paymentMethodBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove selected class from all buttons
+                paymentMethodBtns.forEach(b => b.classList.remove('selected'));
+                
+                // Add selected class to clicked button
+                this.classList.add('selected');
+                
+                // Update selected payment method
+                selectedPaymentMethod = this.getAttribute('data-method');
+            });
+        });
         
         // Quantity buttons
         document.querySelectorAll('.increase').forEach(button => {
@@ -769,11 +895,23 @@
         checkoutForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
+            // Validate that an order type is selected
+            if (!selectedOrderType) {
+                alert('Please select how you would like to receive your order.');
+                return;
+            }
+            
+            // Validate address for delivery
+            if (selectedOrderType === 'delivery' && !customerAddress.value.trim()) {
+                alert('Please provide a delivery address.');
+                return;
+            }
+            
             // Get form values
             const name = document.getElementById('customerName').value;
             const phone = document.getElementById('customerPhone').value;
             const email = document.getElementById('customerEmail').value;
-            const address = document.getElementById('customerAddress').value;
+            const address = customerAddress.value;
             
             // Prepare Google Form URL with pre-filled values
             let formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSc6Zi4MR8abHUd5hsF3h4voM_CKEw_L2qGHd16_eCX-2l8lKQ/formResponse?';
@@ -782,7 +920,7 @@
             formUrl += 'entry.1703929888=' + encodeURIComponent(name);
             formUrl += '&entry.1083970214=' + encodeURIComponent(phone);
             formUrl += '&entry.1452814455=' + encodeURIComponent(email);
-            formUrl += '&entry.518919696=' + encodeURIComponent(address);
+            formUrl += '&entry.518919696=' + encodeURIComponent(address || '');
             
             // Add bread quantities (empty if not ordered)
             formUrl += '&entry.1965965253=' + (cart.longbread || '');
@@ -790,21 +928,38 @@
             formUrl += '&entry.151861888=' + (cart.roundbread || '');
             formUrl += '&entry.314711422=' + (cart.regular || '');
             
+            // Add payment method
+            formUrl += '&entry.1561190628=' + encodeURIComponent(selectedPaymentMethod);
+            
+            // Add order type
+            formUrl += '&entry.35112797=' + encodeURIComponent(selectedOrderType);
+            
             // Submit form in background
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = formUrl;
-            document.body.appendChild(iframe);
-            
-            // Show success message
-            checkoutModal.classList.remove('active');
-            successModal.classList.add('active');
-            
-            // Clear cart
-            cart = {};
-            localStorage.removeItem('bakeryCart');
-            updateCartDisplay();
-            checkoutForm.reset();
+            fetch(formUrl, {
+                method: 'POST',
+                mode: 'no-cors'
+            })
+            .then(() => {
+                // Show success message
+                checkoutModal.classList.remove('active');
+                successModal.classList.add('active');
+                
+                // Clear cart
+                cart = {};
+                localStorage.removeItem('bakeryCart');
+                updateCartDisplay();
+                checkoutForm.reset();
+                
+                // Reset order type selection
+                orderTypeBtns.forEach(btn => btn.classList.remove('selected'));
+                selectedOrderType = null;
+                addressField.style.display = 'none';
+                customerAddress.removeAttribute('required');
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+                alert('There was an error submitting your order. Please try again.');
+            });
         });
         
         // Close success modal
