@@ -1159,4 +1159,64 @@
                 const href = this.getAttribute('href');
                 if (href !== '#') {
                     e.preventDefault();
-         
+                    const targetElement = document.querySelector(href);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                    // Close mobile menu if open
+                    mobileMenu.classList.remove('active');
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+        
+        // Add touch support for better mobile experience
+        document.addEventListener('touchstart', function() {}, {passive: true});
+    </script>
+</body>
+</html>
+
+<!--
+## Key Mobile Usability Improvements:
+
+1. **Mobile Menu**: Added a slide-in mobile menu with large, easy-to-tap navigation items.
+
+2. **Touch Target Sizes**: 
+   - Increased button sizes (minimum 44px as recommended for touch targets)
+   - Made cart button larger (70px instead of 60px)
+   - Enlarged quantity control buttons for easier tapping
+
+3. **Responsive Design**:
+   - Single column layout for products and features on mobile
+   - Adjusted font sizes for better readability
+   - Optimized spacing for smaller screens
+
+4. **Form Usability**:
+   - Set font-size: 16px on form inputs to prevent iOS zoom
+   - Increased padding on form elements
+   - Improved checkout form layout for mobile
+
+5. **Navigation**:
+   - Sticky header for easy access to navigation
+   - Smooth scrolling to anchor links
+   - Mobile menu closes when a link is tapped
+
+6. **Visual Feedback**:
+   - Added hover and active states for buttons
+   - Improved contrast for better readability
+   - Added visual feedback for selected options
+
+7. **Performance**:
+   - Optimized JavaScript for mobile interactions
+   - Added passive event listeners for touch events
+   - Reduced unnecessary animations on mobile
+
+8. **Cart & Checkout**:
+   - Full-width cart panel on mobile
+   - Simplified order type selection with large buttons
+   - Clear visual hierarchy in the checkout process
+
+These changes make the website much more usable on mobile devices while maintaining the desktop experience. -->
