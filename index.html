@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sample Bakery - Fresh Baked Goods</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Core CSS - No Tailwind CDN dependency */
         :root {
             --primary: #8B4513;
             --secondary: #D2691E;
@@ -15,344 +15,93 @@
             --dark: #5D4037;
         }
         
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #FFF8F0;
             color: #333;
-            /* Improve touch target sizing */
-            -webkit-tap-highlight-color: transparent;
+            line-height: 1.6;
         }
         
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
         .header {
             background: linear-gradient(to right, var(--primary), var(--secondary));
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
             z-index: 100;
-        }
-        
-        .hero {
-            background: linear-gradient(rgba(139, 69, 19, 0.7), rgba(210, 105, 30, 0.8)), url('https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3') no-repeat center center/cover;
-            min-height: 70vh;
-            display: flex;
-            align-items: center;
-        }
-        
-        .product-card {
-            transition: all 0.3s ease;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            background: white;
-            margin-bottom: 16px;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .cart-container {
-            position: fixed;
-            top: 0;
-            right: -400px;
-            width: 100%;
-            max-width: 380px;
-            height: 100vh;
-            background: white;
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            transition: right 0.3s ease;
-            overflow-y: auto;
-        }
-        
-        .cart-container.active {
-            right: 0;
-        }
-        
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            display: none;
-        }
-        
-        .overlay.active {
-            display: block;
-        }
-        
-        .cart-item {
-            border-bottom: 1px solid #eee;
             padding: 15px 0;
         }
         
-        .cart-item:last-child {
-            border-bottom: none;
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .quantity-control {
+        .logo {
             display: flex;
             align-items: center;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 100px;
-            overflow: hidden;
         }
         
-        .quantity-control button {
-            background: #f5f5f5;
-            border: none;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            /* Make buttons larger for mobile */
-            padding: 8px;
-        }
-        
-        .quantity-control input {
-            text-align: center;
-            border: none;
-            width: 40px;
-            height: 30px;
-            font-size: 1rem;
-            /* Prevent zoom on input focus */
-            font-size: 16px;
-        }
-        
-        .cart-total {
-            background: var(--light);
-            padding: 15px;
+        .logo-icon {
+            background: white;
+            color: var(--primary);
             font-weight: bold;
             font-size: 1.2rem;
-        }
-        
-        .btn {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            /* Increase tap target size */
-            min-height: 44px;
-            font-size: 1rem;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn-cart {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            z-index: 100;
-            /* Make cart button larger on mobile */
-            width: 70px;
-            height: 70px;
-            font-size: 1.5rem;
-        }
-        
-        .cart-count {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #e74c3c;
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
+            margin-right: 12px;
+        }
+        
+        .logo-text {
+            color: white;
+            font-size: 1.5rem;
             font-weight: bold;
         }
         
-        .checkout-form input, .checkout-form textarea {
-            width: 100%;
-            padding: 12px 16px;
-            margin-bottom: 16px;
-            border: 1px solid #cbd5e0;
-            border-radius: 8px;
-            transition: border-color 0.3s;
-            /* Prevent zoom on input focus */
-            font-size: 16px;
-        }
-        
-        .checkout-form input:focus, .checkout-form textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(205, 133, 63, 0.2);
-        }
-        
-        .required::after {
-            content: " *";
-            color: #e74c3c;
-        }
-        
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+        .nav-menu {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            gap: 20px;
         }
         
-        .modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
-            /* Add margin for mobile */
-            margin: 20px;
-        }
-        
-        .modal.active .modal-content {
-            transform: translateY(0);
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #777;
-        }
-        
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--light);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            color: var(--primary);
-            font-size: 1.5rem;
-        }
-        
-        footer {
-            background: var(--dark);
+        .nav-link {
             color: white;
-        }
-        
-        .footer-link {
-            color: #cbd5e0;
+            text-decoration: none;
             transition: color 0.3s;
+            font-weight: 500;
         }
         
-        .footer-link:hover {
+        .nav-link:hover {
+            color: #FFD780;
+        }
+        
+        .menu-toggle {
             color: white;
-        }
-        
-        /* New styles for order type selection */
-        .order-type-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .order-type-btn {
-            flex: 1;
-            min-width: 120px;
-            padding: 16px 12px;
-            border: 2px solid #cbd5e0;
-            border-radius: 8px;
-            background: white;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
             cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            font-weight: 500;
-            /* Increase tap target size */
-            min-height: 60px;
-            font-size: 1rem;
+            display: none;
         }
         
-        .order-type-btn:hover {
-            border-color: var(--accent);
-            background-color: #fff8f0;
-        }
-        
-        .order-type-btn.selected {
-            border-color: var(--primary);
-            background-color: #fff8f0;
-            color: var(--primary);
-            font-weight: 600;
-        }
-        
-        .payment-method-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .payment-method-btn {
-            flex: 1;
-            min-width: 120px;
-            padding: 16px 12px;
-            border: 2px solid #cbd5e0;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            font-weight: 500;
-            /* Increase tap target size */
-            min-height: 60px;
-            font-size: 1rem;
-        }
-        
-        .payment-method-btn:hover {
-            border-color: var(--accent);
-            background-color: #fff8f0;
-        }
-        
-        .payment-method-btn.selected {
-            border-color: var(--primary);
-            background-color: #fff8f0;
-            color: var(--primary);
-            font-weight: 600;
-        }
-        
-        /* Mobile menu styles */
+        /* Mobile Menu */
         .mobile-menu {
             position: fixed;
             top: 0;
@@ -394,76 +143,492 @@
             cursor: pointer;
         }
         
-        /* Responsive adjustments */
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(139, 69, 19, 0.7), rgba(210, 105, 30, 0.8)), url('https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3') no-repeat center center/cover;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            padding: 40px 0;
+        }
+        
+        .hero-content {
+            text-align: center;
+            color: white;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        @media (min-width: 768px) {
+            .hero-buttons {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+        
+        /* Button Styles */
+        .btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1rem;
+            min-height: 44px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: #fff8f0;
+        }
+        
+        /* Section Styles */
+        .section {
+            padding: 60px 0;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-icon {
+            font-size: 3rem;
+            color: var(--secondary);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .product-description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .product-price {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        /* Quantity Control */
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            width: 100px;
+        }
+        
+        .quantity-btn {
+            background: #f5f5f5;
+            border: none;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        .quantity-input {
+            text-align: center;
+            border: none;
+            width: 40px;
+            height: 30px;
+            font-size: 1rem;
+        }
+        
+        /* Features Section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        @media (min-width: 768px) {
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        .feature-item {
+            text-align: center;
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        
+        .feature-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .feature-description {
+            color: #666;
+        }
+        
+        /* Contact Section */
+        .contact-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .contact-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        @media (min-width: 768px) {
+            .contact-wrapper {
+                flex-direction: row;
+            }
+        }
+        
+        .contact-info {
+            background: linear-gradient(to bottom right, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px;
+        }
+        
+        .contact-info-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .contact-info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .contact-info-icon {
+            font-size: 1.2rem;
+            margin-right: 12px;
+            min-width: 24px;
+        }
+        
+        .contact-form {
+            padding: 30px;
+            flex: 1;
+        }
+        
+        .contact-form-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+            font-size: 1rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(205, 133, 63, 0.2);
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(205, 133, 63, 0.2);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (min-width: 768px) {
+            .footer-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo-icon {
+            background: white;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+        
+        .footer-logo-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .footer-description {
+            color: #aaa;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .footer-social-link {
+            color: #aaa;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-social-link:hover {
+            color: white;
+        }
+        
+        .footer-heading {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .footer-link {
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .footer-link:hover {
+            color: white;
+        }
+        
+        .footer-copyright {
+            text-align: center;
+            color: #777;
+            padding-top: 30px;
+            border-top: 1px solid #555;
+            font-size: 0.9rem;
+        }
+        
+        /* Cart Button */
+        .cart-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        /* Responsive Adjustments */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-                line-height: 1.2;
+            .menu-toggle {
+                display: block;
             }
             
-            .hero p {
-                font-size: 1.1rem;
+            .nav-menu {
+                display: none;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
                 padding: 0 15px;
             }
             
-            .btn {
-                padding: 14px 20px;
-                font-size: 1rem;
+            .section {
+                padding: 40px 0;
             }
             
-            .product-card {
-                margin: 8px;
-            }
-            
-            .grid-cols-4, .grid-cols-3, .grid-cols-2 {
-                grid-template-columns: 1fr !important;
-            }
-            
-            .contact-form input, .contact-form textarea {
-                font-size: 16px;
-                padding: 14px;
-            }
-            
-            footer .grid-cols-4 {
-                grid-template-columns: 1fr 1fr !important;
-            }
-            
-            .modal-content {
-                margin: 15px;
-                padding: 25px 20px;
-            }
-            
-            .order-type-btn, .payment-method-btn {
-                padding: 18px 12px;
-                font-size: 1.1rem;
+            .section-title {
+                font-size: 1.8rem;
             }
         }
         
         @media (max-width: 480px) {
-            .hero h1 {
-                font-size: 2rem;
+            .hero-title {
+                font-size: 1.8rem;
             }
             
             .btn {
-                padding: 12px 16px;
+                padding: 12px 20px;
                 font-size: 0.95rem;
-            }
-            
-            .order-type-selector, .payment-method-selector {
-                flex-direction: column;
-            }
-            
-            .order-type-btn, .payment-method-btn {
-                min-width: auto;
-            }
-            
-            footer .grid-cols-4 {
-                grid-template-columns: 1fr !important;
-            }
-            
-            .cart-container {
-                width: 100%;
-                max-width: none;
             }
         }
     </style>
@@ -474,126 +639,118 @@
         <button class="close-menu" id="closeMenu">
             <i class="fas fa-times"></i>
         </button>
-        <a href="#home" class="mobile-menu-item">Home</a>
-        <a href="#products" class="mobile-menu-item">Products</a>
-        <a href="#about" class="mobile-menu-item">About</a>
-        <a href="#contact" class="mobile-menu-item">Contact</a>
+        <a href="index.html" class="mobile-menu-item">Home</a>
+        <a href="index.html#products" class="mobile-menu-item">Products</a>
+        <a href="index.html#about" class="mobile-menu-item">About</a>
+        <a href="index.html#contact" class="mobile-menu-item">Contact</a>
+        <a href="cart.html" class="mobile-menu-item">Cart</a>
     </div>
 
     <!-- Header -->
-    <header class="header text-white py-4">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <div class="flex items-center">
-                <div class="bg-white text-brown-800 font-bold text-xl w-10 h-10 rounded-full flex items-center justify-center mr-3">
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <div class="logo-icon">
                     <i class="fas fa-bread-slice"></i>
                 </div>
-                <h1 class="text-2xl font-bold">SAMPLE BAKERY</h1>
+                <div class="logo-text">SAMPLE BAKERY</div>
             </div>
-            <nav class="hidden md:flex space-x-8">
-                <a href="#home" class="hover:text-amber-200 transition">Home</a>
-                <a href="#products" class="hover:text-amber-200 transition">Products</a>
-                <a href="#about" class="hover:text-amber-200 transition">About</a>
-                <a href="#contact" class="hover:text-amber-200 transition">Contact</a>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.html#products" class="nav-link">Products</a>
+                <a href="index.html#about" class="nav-link">About</a>
+                <a href="index.html#contact" class="nav-link">Contact</a>
+                <a href="cart.html" class="nav-link">Cart</a>
             </nav>
-            <button class="md:hidden text-2xl" id="menuButton">
+            <button class="menu-toggle" id="menuButton">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="container mx-auto px-4 text-center text-white">
-            <h1 class="text-4xl md:text-6xl font-bold mb-6">Fresh Baked Goods Daily</h1>
-            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">Experience the aroma of freshly baked bread from Sample Bakery in Millewa</p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="#products" class="btn px-8 py-4 text-lg">Shop Now</a>
-                <a href="#contact" class="btn bg-white text-brown-800 hover:bg-gray-100 px-8 py-4 text-lg">Contact Us</a>
+    <section class="hero">
+        <div class="container hero-content">
+            <h1 class="hero-title">Fresh Baked Goods Daily</h1>
+            <p class="hero-subtitle">Experience the aroma of freshly baked bread from Sample Bakery in Millewa</p>
+            <div class="hero-buttons">
+                <a href="index.html#products" class="btn">Shop Now</a>
+                <a href="index.html#contact" class="btn btn-outline">Contact Us</a>
             </div>
         </div>
     </section>
 
     <!-- Featured Products -->
-    <section id="products" class="py-16 bg-amber-50">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold mb-4">Our Fresh Breads</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">Baked daily with the finest ingredients and traditional recipes</p>
-            </div>
+    <section id="products" class="section">
+        <div class="container">
+            <h2 class="section-title">Our Fresh Breads</h2>
+            <p class="section-subtitle">Baked daily with the finest ingredients and traditional recipes</p>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="products-grid">
                 <!-- Product 1 -->
                 <div class="product-card">
-                    <div class="p-6">
-                        <div class="text-center mb-4">
-                            <i class="fas fa-bread-slice text-5xl text-amber-700"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2 text-center">Longbread</h3>
-                        <p class="text-gray-600 mb-4 text-center">Buttery, crumbly, and delicious traditional longbread</p>
-                        <div class="flex justify-between items-center">
-                            <span class="font-bold text-lg">$5.99</span>
-                            <div class="quantity-control">
-                                <button class="decrease" data-product="longbread">-</button>
-                                <input type="number" min="0" value="0" class="quantity" data-product="longbread">
-                                <button class="increase" data-product="longbread">+</button>
-                            </div>
+                    <div class="product-icon">
+                        <i class="fas fa-bread-slice"></i>
+                    </div>
+                    <h3 class="product-title">Longbread</h3>
+                    <p class="product-description">Buttery, crumbly, and delicious traditional longbread</p>
+                    <div class="product-footer">
+                        <span class="product-price">$5.99</span>
+                        <div class="quantity-control">
+                            <button class="quantity-btn decrease" data-product="longbread">-</button>
+                            <input type="number" min="0" value="0" class="quantity-input" data-product="longbread">
+                            <button class="quantity-btn increase" data-product="longbread">+</button>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Product 2 -->
                 <div class="product-card">
-                    <div class="p-6">
-                        <div class="text-center mb-4">
-                            <i class="fas fa-bread-slice text-5xl text-amber-600"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2 text-center">Flatbread</h3>
-                        <p class="text-gray-600 mb-4 text-center">Thin, crispy flatbread perfect for any meal</p>
-                        <div class="flex justify-between items-center">
-                            <span class="font-bold text-lg">$3.99</span>
-                            <div class="quantity-control">
-                                <button class="decrease" data-product="flatbread">-</button>
-                                <input type="number" min="0" value="0" class="quantity" data-product="flatbread">
-                                <button class="increase" data-product="flatbread">+</button>
-                            </div>
+                    <div class="product-icon">
+                        <i class="fas fa-bread-slice"></i>
+                    </div>
+                    <h3 class="product-title">Flatbread</h3>
+                    <p class="product-description">Thin, crispy flatbread perfect for any meal</p>
+                    <div class="product-footer">
+                        <span class="product-price">$3.99</span>
+                        <div class="quantity-control">
+                            <button class="quantity-btn decrease" data-product="flatbread">-</button>
+                            <input type="number" min="0" value="0" class="quantity-input" data-product="flatbread">
+                            <button class="quantity-btn increase" data-product="flatbread">+</button>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Product 3 -->
                 <div class="product-card">
-                    <div class="p-6">
-                        <div class="text-center mb-4">
-                            <i class="fas fa-bread-slice text-5xl text-amber-800"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2 text-center">Roundbread</h3>
-                        <p class="text-gray-600 mb-4 text-center">Traditional round bread with a hearty crust</p>
-                        <div class="flex justify-between items-center">
-                            <span class="font-bold text-lg">$4.99</span>
-                            <div class="quantity-control">
-                                <button class="decrease" data-product="roundbread">-</button>
-                                <input type="number" min="0" value="0" class="quantity" data-product="roundbread">
-                                <button class="increase" data-product="roundbread">+</button>
-                            </div>
+                    <div class="product-icon">
+                        <i class="fas fa-bread-slice"></i>
+                    </div>
+                    <h3 class="product-title">Roundbread</h3>
+                    <p class="product-description">Traditional round bread with a hearty crust</p>
+                    <div class="product-footer">
+                        <span class="product-price">$4.99</span>
+                        <div class="quantity-control">
+                            <button class="quantity-btn decrease" data-product="roundbread">-</button>
+                            <input type="number" min="0" value="0" class="quantity-input" data-product="roundbread">
+                            <button class="quantity-btn increase" data-product="roundbread">+</button>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Product 4 -->
                 <div class="product-card">
-                    <div class="p-6">
-                        <div class="text-center mb-4">
-                            <i class="fas fa-bread-slice text-5xl text-amber-500"></i>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2 text-center">Regular Bread</h3>
-                        <p class="text-gray-600 mb-4 text-center">Classic white bread, soft and fluffy</p>
-                        <div class="flex justify-between items-center">
-                            <span class="font-bold text-lg">$2.99</span>
-                            <div class="quantity-control">
-                                <button class="decrease" data-product="regular">-</button>
-                                <input type="number" min="0" value="0" class="quantity" data-product="regular">
-                                <button class="increase" data-product="regular">+</button>
-                            </div>
+                    <div class="product-icon">
+                        <i class="fas fa-bread-slice"></i>
+                    </div>
+                    <h3 class="product-title">Regular Bread</h3>
+                    <p class="product-description">Classic white bread, soft and fluffy</p>
+                    <div class="product-footer">
+                        <span class="product-price">$2.99</span>
+                        <div class="quantity-control">
+                            <button class="quantity-btn decrease" data-product="regular">-</button>
+                            <input type="number" min="0" value="0" class="quantity-input" data-product="regular">
+                            <button class="quantity-btn increase" data-product="regular">+</button>
                         </div>
                     </div>
                 </div>
@@ -602,76 +759,80 @@
     </section>
 
     <!-- Features -->
-    <section id="about" class="py-16">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold mb-4">Why Choose Sample Bakery?</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">We're committed to providing the freshest, highest quality baked goods</p>
-            </div>
+    <section id="about" class="section">
+        <div class="container">
+            <h2 class="section-title">Why Choose Sample Bakery?</h2>
+            <p class="section-subtitle">We're committed to providing the freshest, highest quality baked goods</p>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="features-grid">
                 <!-- Feature 1 -->
-                <div class="text-center">
+                <div class="feature-item">
                     <div class="feature-icon">
                         <i class="fas fa-seedling"></i>
                     </div>
-                    <h3 class="font-bold text-xl mb-3">Natural Ingredients</h3>
-                    <p class="text-gray-600">We use only the finest natural ingredients, sourced locally whenever possible.</p>
+                    <h3 class="feature-title">Natural Ingredients</h3>
+                    <p class="feature-description">We use only the finest natural ingredients, sourced locally whenever possible.</p>
                 </div>
                 
                 <!-- Feature 2 -->
-                <div class="text-center">
+                <div class="feature-item">
                     <div class="feature-icon">
                         <i class="fas fa-fire"></i>
                     </div>
-                    <h3 class="font-bold text-xl mb-3">Traditional Baking</h3>
-                    <p class="text-gray-600">Our recipes have been passed down through generations for authentic taste.</p>
+                    <h3 class="feature-title">Traditional Baking</h3>
+                    <p class="feature-description">Our recipes have been passed down through generations for authentic taste.</p>
                 </div>
                 
                 <!-- Feature 3 -->
-                <div class="text-center">
+                <div class="feature-item">
                     <div class="feature-icon">
                         <i class="fas fa-truck"></i>
                     </div>
-                    <h3 class="font-bold text-xl mb-3">Daily Fresh</h3>
-                    <p class="text-gray-600">All our breads are baked fresh daily to ensure the best quality and taste.</p>
+                    <h3 class="feature-title">Daily Fresh</h3>
+                    <p class="feature-description">All our breads are baked fresh daily to ensure the best quality and taste.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="py-16 bg-amber-50">
-        <div class="container mx-auto px-4">
-            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-                <div class="md:flex">
-                    <div class="md:w-1/2 bg-gradient-to-br from-amber-800 to-amber-600 text-white p-8">
-                        <h2 class="text-2xl font-bold mb-6">Visit Our Bakery</h2>
-                        <p class="mb-6">Come experience the aroma of fresh bread baking in our ovens!</p>
+    <section id="contact" class="section">
+        <div class="container">
+            <div class="contact-container">
+                <div class="contact-wrapper">
+                    <div class="contact-info">
+                        <h2 class="contact-info-title">Visit Our Bakery</h2>
+                        <p class="contact-info-description" style="margin-bottom: 30px;">Come experience the aroma of fresh bread baking in our ovens!</p>
                         
-                        <div class="space-y-4">
-                            <div class="flex items-center">
-                                <i class="fas fa-map-marker-alt mr-4 text-xl"></i>
-                                <span>123 Bakery Street, Millewa</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-phone mr-4 text-xl"></i>
-                                <span>(03) 5021 4567</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-clock mr-4 text-xl"></i>
-                                <span>Mon-Sat: 6AM - 6PM, Sun: 7AM - 4PM</span>
-                            </div>
+                        <div class="contact-info-item">
+                            <i class="fas fa-map-marker-alt contact-info-icon"></i>
+                            <span>123 Bakery Street, Millewa</span>
+                        </div>
+                        <div class="contact-info-item">
+                            <i class="fas fa-phone contact-info-icon"></i>
+                            <span>(03) 5021 4567</span>
+                        </div>
+                        <div class="contact-info-item">
+                            <i class="fas fa-clock contact-info-icon"></i>
+                            <span>Mon-Sat: 6AM - 6PM, Sun: 7AM - 4PM</span>
                         </div>
                     </div>
                     
-                    <div class="md:w-1/2 p-8">
-                        <h3 class="text-xl font-bold mb-6">Send us a message</h3>
-                        <form class="contact-form">
-                            <input type="text" placeholder="Your Name" required>
-                            <input type="email" placeholder="Your Email">
-                            <input type="tel" placeholder="Phone Number" required>
-                            <textarea rows="4" placeholder="Your Message"></textarea>
+                    <div class="contact-form">
+                        <h3 class="contact-form-title">Send us a message</h3>
+                        <form id="contactForm">
+                            <div class="form-group">
+                                <input type="text" class="form-input" placeholder="Your Name" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" class="form-input" placeholder="Your Email">
+                            </div>
+                            <div class="form-group">
+                                <input type="tel" class="form-input" placeholder="Phone Number" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-textarea" rows="4" placeholder="Your Message"></textarea>
+                            </div>
                             <button type="submit" class="btn w-full">Send Message</button>
                         </form>
                     </div>
@@ -681,136 +842,59 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-12">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
                 <div>
-                    <div class="flex items-center mb-4">
-                        <div class="bg-white text-brown-800 font-bold text-xl w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                    <div class="footer-logo">
+                        <div class="footer-logo-icon">
                             <i class="fas fa-bread-slice"></i>
                         </div>
-                        <h3 class="text-xl font-bold">SAMPLE BAKERY</h3>
+                        <div class="footer-logo-text">SAMPLE BAKERY</div>
                     </div>
-                    <p class="text-gray-400 mb-4">Serving the Millewa community with fresh, quality baked goods since 1985.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    <p class="footer-description">Serving the Millewa community with fresh, quality baked goods since 1985.</p>
+                    <div class="footer-social">
+                        <a href="#" class="footer-social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="footer-social-link"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
                 
                 <div>
-                    <h4 class="text-lg font-bold mb-4">Quick Links</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#home" class="footer-link hover:underline">Home</a></li>
-                        <li><a href="#products" class="footer-link hover:underline">Products</a></li>
-                        <li><a href="#about" class="footer-link hover:underline">About Us</a></li>
-                        <li><a href="#contact" class="footer-link hover:underline">Contact</a></li>
-                    </ul>
+                    <h4 class="footer-heading">Quick Links</h4>
+                    <a href="index.html" class="footer-link">Home</a>
+                    <a href="index.html#products" class="footer-link">Products</a>
+                    <a href="index.html#about" class="footer-link">About Us</a>
+                    <a href="index.html#contact" class="footer-link">Contact</a>
+                    <a href="cart.html" class="footer-link">Cart</a>
                 </div>
                 
                 <div>
-                    <h4 class="text-lg font-bold mb-4">Popular Items</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="footer-link hover:underline">Longbread</a></li>
-                        <li><a href="#" class="footer-link hover:underline">Flatbread</a></li>
-                        <li><a href="#" class="footer-link hover:underline">Roundbread</a></li>
-                        <li><a href="#" class="footer-link hover:underline">Regular Bread</a></li>
-                    </ul>
+                    <h4 class="footer-heading">Popular Items</h4>
+                    <a href="#" class="footer-link">Longbread</a>
+                    <a href="#" class="footer-link">Flatbread</a>
+                    <a href="#" class="footer-link">Roundbread</a>
+                    <a href="#" class="footer-link">Regular Bread</a>
                 </div>
                 
                 <div>
-                    <h4 class="text-lg font-bold mb-4">Opening Hours</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li>Monday - Saturday: 6AM - 6PM</li>
-                        <li>Sunday: 7AM - 4PM</li>
-                        <li class="mt-4">Orders: 24/7 Online</li>
-                    </ul>
+                    <h4 class="footer-heading">Opening Hours</h4>
+                    <p class="footer-link">Monday - Saturday: 6AM - 6PM</p>
+                    <p class="footer-link">Sunday: 7AM - 4PM</p>
+                    <p class="footer-link" style="margin-top: 20px;">Orders: 24/7 Online</p>
                 </div>
             </div>
             
-            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500">
+            <div class="footer-copyright">
                 <p>&copy; 2023 Sample Bakery. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <!-- Cart Button -->
-    <button class="btn btn-cart" id="cartButton">
-        <i class="fas fa-shopping-cart text-xl"></i>
+    <button class="cart-btn" id="cartButton">
+        <i class="fas fa-shopping-cart"></i>
         <div class="cart-count" id="cartCount">0</div>
     </button>
-
-    <!-- Cart Container -->
-    <div class="overlay" id="overlay"></div>
-    <div class="cart-container" id="cartContainer">
-        <div class="p-6 border-b">
-            <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-bold">Your Order</h2>
-                <button id="closeCart" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
-            </div>
-        </div>
-        
-        <div class="p-6" id="cartItems">
-            <!-- Cart items will be populated here -->
-            <div class="text-center py-10 text-gray-500" id="emptyCartMessage">
-                <i class="fas fa-shopping-cart text-5xl mb-4"></i>
-                <p>Your cart is empty</p>
-                <p class="mt-2">Add some delicious breads to your order!</p>
-            </div>
-        </div>
-        
-        <div class="cart-total flex justify-between items-center px-6 py-4">
-            <span>Total:</span>
-            <span class="text-xl font-bold" id="cartTotal">$0.00</span>
-        </div>
-        
-        <div class="p-6">
-            <button class="btn w-full" id="checkoutButton">Proceed to Checkout</button>
-        </div>
-    </div>
-
-    <!-- Checkout Modal -->
-    <div class="modal" id="checkoutModal">
-        <div class="modal-content">
-            <span class="close-modal" id="closeModal">&times;</span>
-            <h2 class="text-2xl font-bold mb-6">Complete Your Order</h2>
-            <form id="checkoutForm" class="checkout-form">
-                <input type="text" id="customerName" placeholder="Full Name" required>
-                <input type="tel" id="customerPhone" placeholder="Phone Number" required>
-                <input type="email" id="customerEmail" placeholder="Email (Optional)">
-                
-                <h3 class="text-lg font-bold mb-3">How would you like to receive your order?</h3>
-                <div class="order-type-selector">
-                    <div class="order-type-btn" data-type="takeaway">Takeaway</div>
-                    <div class="order-type-btn" data-type="dinein">Dine In</div>
-                    <div class="order-type-btn" data-type="delivery">Delivery</div>
-                </div>
-                
-                <div id="addressField" style="display: none;">
-                    <h3 class="text-lg font-bold mb-3">Delivery Address</h3>
-                    <textarea id="customerAddress" placeholder="Delivery Address" rows="3"></textarea>
-                </div>
-                
-                <h3 class="text-lg font-bold mb-3">Payment Method</h3>
-                <div class="payment-method-selector">
-                    <div class="payment-method-btn selected" data-method="cash">Cash</div>
-                </div>
-                
-                <button type="submit" class="btn w-full">Place Order</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div class="modal" id="successModal">
-        <div class="modal-content">
-            <h2 class="text-2xl font-bold mb-4">Order Submitted!</h2>
-            <p class="mb-6">Thank you for your order. We will contact you to confirm your order shortly.</p>
-            <button class="btn" id="closeSuccessModal">Continue Shopping</button>
-        </div>
-    </div>
 
     <script>
         // Initialize cart from localStorage
@@ -826,77 +910,10 @@
         
         // DOM Elements
         const cartButton = document.getElementById('cartButton');
-        const cartContainer = document.getElementById('cartContainer');
-        const overlay = document.getElementById('overlay');
-        const closeCart = document.getElementById('closeCart');
-        const cartItems = document.getElementById('cartItems');
         const cartCount = document.getElementById('cartCount');
-        const cartTotal = document.getElementById('cartTotal');
-        const checkoutButton = document.getElementById('checkoutButton');
-        const checkoutModal = document.getElementById('checkoutModal');
-        const closeModal = document.getElementById('closeModal');
-        const checkoutForm = document.getElementById('checkoutForm');
-        const successModal = document.getElementById('successModal');
-        const closeSuccessModal = document.getElementById('closeSuccessModal');
-        const emptyCartMessage = document.getElementById('emptyCartMessage');
-        const addressField = document.getElementById('addressField');
-        const customerAddress = document.getElementById('customerAddress');
-        const orderTypeBtns = document.querySelectorAll('.order-type-btn');
-        const paymentMethodBtns = document.querySelectorAll('.payment-method-btn');
         const menuButton = document.getElementById('menuButton');
         const mobileMenu = document.getElementById('mobileMenu');
         const closeMenu = document.getElementById('closeMenu');
-        
-        let selectedOrderType = null;
-        let selectedPaymentMethod = 'cash';
-        
-        // Mobile menu toggle
-        menuButton.addEventListener('click', () => {
-            mobileMenu.classList.add('active');
-            overlay.classList.add('active');
-        });
-        
-        closeMenu.addEventListener('click', () => {
-            mobileMenu.classList.remove('active');
-            overlay.classList.remove('active');
-        });
-        
-        // Order type selection
-        orderTypeBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Remove selected class from all buttons
-                orderTypeBtns.forEach(b => b.classList.remove('selected'));
-                
-                // Add selected class to clicked button
-                this.classList.add('selected');
-                
-                // Update selected order type
-                selectedOrderType = this.getAttribute('data-type');
-                
-                // Show/hide address field based on order type
-                if (selectedOrderType === 'delivery') {
-                    addressField.style.display = 'block';
-                    customerAddress.setAttribute('required', 'required');
-                } else {
-                    addressField.style.display = 'none';
-                    customerAddress.removeAttribute('required');
-                }
-            });
-        });
-        
-        // Payment method selection
-        paymentMethodBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Remove selected class from all buttons
-                paymentMethodBtns.forEach(b => b.classList.remove('selected'));
-                
-                // Add selected class to clicked button
-                this.classList.add('selected');
-                
-                // Update selected payment method
-                selectedPaymentMethod = this.getAttribute('data-method');
-            });
-        });
         
         // Quantity buttons
         document.querySelectorAll('.increase').forEach(button => {
@@ -914,7 +931,7 @@
         });
         
         // Quantity inputs
-        document.querySelectorAll('.quantity').forEach(input => {
+        document.querySelectorAll('.quantity-input').forEach(input => {
             input.addEventListener('change', function() {
                 const product = this.getAttribute('data-product');
                 const value = parseInt(this.value) || 0;
@@ -937,7 +954,7 @@
             updateCartDisplay();
             
             // Update input field
-            document.querySelector(`.quantity[data-product="${product}"]`).value = newQty;
+            document.querySelector(`.quantity-input[data-product="${product}"]`).value = newQty;
         }
         
         // Update cart display
@@ -945,278 +962,34 @@
             // Update cart count
             const totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
             cartCount.textContent = totalItems;
-            
-            // Clear cart items
-            cartItems.innerHTML = '';
-            
-            // Show empty message if cart is empty
-            if (totalItems === 0) {
-                cartItems.appendChild(emptyCartMessage);
-                emptyCartMessage.style.display = 'block';
-                cartTotal.textContent = '$0.00';
-                return;
-            }
-            
-            emptyCartMessage.style.display = 'none';
-            
-            // Add items to cart
-            let total = 0;
-            for (const [product, qty] of Object.entries(cart)) {
-                const price = prices[product];
-                const itemTotal = price * qty;
-                total += itemTotal;
-                
-                const productNames = {
-                    longbread: 'Longbread',
-                    flatbread: 'Flatbread',
-                    roundbread: 'Roundbread',
-                    regular: 'Regular Bread'
-                };
-                
-                const cartItem = document.createElement('div');
-                cartItem.className = 'cart-item';
-                cartItem.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h3 class="font-bold">${productNames[product]}</h3>
-                            <p class="text-gray-600">$${price.toFixed(2)} each</p>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="quantity-control mr-4">
-                                <button class="decrease-cart" data-product="${product}">-</button>
-                                <input type="number" min="0" value="${qty}" class="quantity-cart" data-product="${product}">
-                                <button class="increase-cart" data-product="${product}">+</button>
-                            </div>
-                            <span class="font-bold mr-4">$${itemTotal.toFixed(2)}</span>
-                            <button class="text-red-500 remove-item" data-product="${product}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                cartItems.appendChild(cartItem);
-            }
-            
-            // Update total
-            cartTotal.textContent = `$${total.toFixed(2)}`;
-            
-            // Add event listeners to new buttons
-            document.querySelectorAll('.increase-cart').forEach(button => {
-                button.addEventListener('click', function() {
-                    const product = this.getAttribute('data-product');
-                    updateQuantity(product, 1);
-                });
-            });
-            
-            document.querySelectorAll('.decrease-cart').forEach(button => {
-                button.addEventListener('click', function() {
-                    const product = this.getAttribute('data-product');
-                    updateQuantity(product, -1);
-                });
-            });
-            
-            document.querySelectorAll('.quantity-cart').forEach(input => {
-                input.addEventListener('change', function() {
-                    const product = this.getAttribute('data-product');
-                    const value = parseInt(this.value) || 0;
-                    updateQuantity(product, value - (cart[product] || 0));
-                });
-            });
-            
-            document.querySelectorAll('.remove-item').forEach(button => {
-                button.addEventListener('click', function() {
-                    const product = this.getAttribute('data-product');
-                    delete cart[product];
-                    localStorage.setItem('bakeryCart', JSON.stringify(cart));
-                    updateCartDisplay();
-                    document.querySelector(`.quantity[data-product="${product}"]`).value = 0;
-                });
-            });
         }
         
-        // Cart toggle
-        cartButton.addEventListener('click', () => {
-            cartContainer.classList.add('active');
-            overlay.classList.add('active');
+        // Mobile menu toggle
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.add('active');
         });
         
-        closeCart.addEventListener('click', () => {
-            cartContainer.classList.remove('active');
-            overlay.classList.remove('active');
-        });
-        
-        overlay.addEventListener('click', () => {
-            cartContainer.classList.remove('active');
-            overlay.classList.remove('active');
+        closeMenu.addEventListener('click', () => {
             mobileMenu.classList.remove('active');
         });
         
-        // Close modals when clicking outside
-        document.addEventListener('click', function(e) {
-            if (checkoutModal.classList.contains('active') && !checkoutModal.contains(e.target) && e.target !== checkoutButton) {
-                checkoutModal.classList.remove('active');
-            }
-            if (successModal.classList.contains('active') && !successModal.contains(e.target)) {
-                successModal.classList.remove('active');
-            }
+        // Cart button - redirect to cart page
+        cartButton.addEventListener('click', () => {
+            window.location.href = 'cart.html';
         });
         
-        // Checkout
-        checkoutButton.addEventListener('click', () => {
-            if (Object.keys(cart).length === 0) {
-                alert('Your cart is empty!');
-                return;
-            }
-            checkoutModal.classList.add('active');
-        });
-        
-        closeModal.addEventListener('click', () => {
-            checkoutModal.classList.remove('active');
-        });
-        
-        // Form submission
-        checkoutForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Validate that an order type is selected
-            if (!selectedOrderType) {
-                alert('Please select how you would like to receive your order.');
-                return;
-            }
-            
-            // Validate address for delivery
-            if (selectedOrderType === 'delivery' && !customerAddress.value.trim()) {
-                alert('Please provide a delivery address.');
-                return;
-            }
-            
-            // Get form values
-            const name = document.getElementById('customerName').value;
-            const phone = document.getElementById('customerPhone').value;
-            const email = document.getElementById('customerEmail').value;
-            const address = customerAddress.value;
-            
-            // Prepare Google Form URL with pre-filled values
-            let formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSc6Zi4MR8abHUd5hsF3h4voM_CKEw_L2qGHd16_eCX-2l8lKQ/formResponse?';
-            
-            // Add customer info
-            formUrl += 'entry.1703929888=' + encodeURIComponent(name);
-            formUrl += '&entry.1083970214=' + encodeURIComponent(phone);
-            formUrl += '&entry.1452814455=' + encodeURIComponent(email);
-            formUrl += '&entry.518919696=' + encodeURIComponent(address || '');
-            
-            // Add bread quantities (empty if not ordered)
-            formUrl += '&entry.1965965253=' + (cart.longbread || '');
-            formUrl += '&entry.1358749132=' + (cart.flatbread || '');
-            formUrl += '&entry.151861888=' + (cart.roundbread || '');
-            formUrl += '&entry.314711422=' + (cart.regular || '');
-            
-            // Add payment method
-            formUrl += '&entry.1561190628=' + encodeURIComponent(selectedPaymentMethod);
-            
-            // Add order type
-            formUrl += '&entry.35112797=' + encodeURIComponent(selectedOrderType);
-            
-            // Submit form in background
-            fetch(formUrl, {
-                method: 'POST',
-                mode: 'no-cors'
-            })
-            .then(() => {
-                // Show success message
-                checkoutModal.classList.remove('active');
-                successModal.classList.add('active');
-                
-                // Clear cart
-                cart = {};
-                localStorage.removeItem('bakeryCart');
-                updateCartDisplay();
-                checkoutForm.reset();
-                
-                // Reset order type selection
-                orderTypeBtns.forEach(btn => btn.classList.remove('selected'));
-                selectedOrderType = null;
-                addressField.style.display = 'none';
-                customerAddress.removeAttribute('required');
-            })
-            .catch(error => {
-                console.error('Error submitting form:', error);
-                alert('There was an error submitting your order. Please try again.');
+        // Contact form submission
+        const contactForm = document.getElementById('contactForm');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Thank you for your message! We will get back to you soon.');
+                contactForm.reset();
             });
-        });
-        
-        // Close success modal
-        closeSuccessModal.addEventListener('click', () => {
-            successModal.classList.remove('active');
-        });
+        }
         
         // Initialize cart display
         updateCartDisplay();
-        
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                const href = this.getAttribute('href');
-                if (href !== '#') {
-                    e.preventDefault();
-                    const targetElement = document.querySelector(href);
-                    if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 80,
-                            behavior: 'smooth'
-                        });
-                    }
-                    // Close mobile menu if open
-                    mobileMenu.classList.remove('active');
-                    overlay.classList.remove('active');
-                }
-            });
-        });
-        
-        // Add touch support for better mobile experience
-        document.addEventListener('touchstart', function() {}, {passive: true});
     </script>
 </body>
 </html>
-
-<!--
-## Key Mobile Usability Improvements:
-
-1. **Mobile Menu**: Added a slide-in mobile menu with large, easy-to-tap navigation items.
-
-2. **Touch Target Sizes**: 
-   - Increased button sizes (minimum 44px as recommended for touch targets)
-   - Made cart button larger (70px instead of 60px)
-   - Enlarged quantity control buttons for easier tapping
-
-3. **Responsive Design**:
-   - Single column layout for products and features on mobile
-   - Adjusted font sizes for better readability
-   - Optimized spacing for smaller screens
-
-4. **Form Usability**:
-   - Set font-size: 16px on form inputs to prevent iOS zoom
-   - Increased padding on form elements
-   - Improved checkout form layout for mobile
-
-5. **Navigation**:
-   - Sticky header for easy access to navigation
-   - Smooth scrolling to anchor links
-   - Mobile menu closes when a link is tapped
-
-6. **Visual Feedback**:
-   - Added hover and active states for buttons
-   - Improved contrast for better readability
-   - Added visual feedback for selected options
-
-7. **Performance**:
-   - Optimized JavaScript for mobile interactions
-   - Added passive event listeners for touch events
-   - Reduced unnecessary animations on mobile
-
-8. **Cart & Checkout**:
-   - Full-width cart panel on mobile
-   - Simplified order type selection with large buttons
-   - Clear visual hierarchy in the checkout process
-
-These changes make the website much more usable on mobile devices while maintaining the desktop experience. -->
